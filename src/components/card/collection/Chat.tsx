@@ -10,7 +10,7 @@ type talker = {
   img: string;
   name: string;
 };
-const host = "http://AISound.aipet.vip:8000";
+const host = "http://chatapi.aipet.world";
 
 const Chat = () => {
   const Col = styled.div`
