@@ -4,6 +4,7 @@ import Collection from "@/page/Collection";
 import Comminity from "@/page/Community";
 import Foundation from "@/page/Foundation";
 import Detail from "@/page/Detail";
+import Market from '@/page/Market';
 
 const routes = [
   { path: "/", component: Home, name: "Home" },
@@ -11,6 +12,7 @@ const routes = [
   { path: "/community", component: Comminity, name: "community" },
   { path: "/foundation", component: Foundation, name: "foundation" },
   { path: "/detail", component: Detail, name: "detail" },
+  { path: "/market", component: Market, name: "market" },
 ];
 
 export const router = VueRouter.createRouter({

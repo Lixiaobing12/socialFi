@@ -4,7 +4,7 @@ import Food from "@/components/card/collection/food";
 import { collection, mintStore } from "@/store/mint.contract";
 import { useWallet } from "@/store/wallet";
 import { NForm, NFormItem, NGrid, NInput } from "naive-ui";
-import { defineComponent, ref } from "vue";
+import { computed, defineComponent, ref, watch } from "vue";
 import styled from "vue3-styled-component";
 
 const Collections = () => {
@@ -111,6 +111,8 @@ const Collections = () => {
       const useMintStore = mintStore();
       const wallet = useWallet();
       const type = ref(0);
+      const items = computed<collection[]>(() => useMintStore.collection);
+
       const chageType = async (value: number) => {
         type.value = value;
       };
@@ -123,6 +125,7 @@ const Collections = () => {
         chatRef.value?.pushTarget(target.value);
         chatRef.value?.open();
       };
+
       return () => (
         <Wrapper>
           <Chat
@@ -132,7 +135,7 @@ const Collections = () => {
             }}
           />
           <Flex>
-            <Avant src="/assets/logo.png"></Avant>
+            <Avant src="/assets/market1.png"></Avant>
             <div>
               <h1>
                 {wallet.wallet.account.substring(0, 6) +
@@ -162,7 +165,7 @@ const Collections = () => {
             <List>
               {target.value.attributes.map((attr) => (
                 <ListItem>
-                  <h4>{attr.TraitType}: </h4>
+                  <h4>{attr.trait_type}: </h4>
                   <h5>{attr.value}</h5>
                 </ListItem>
               ))}

@@ -8,7 +8,7 @@ import axios from "axios";
 
 type attributes = {
   value: string;
-  TraitType: string;
+  trait_type: string;
 };
 export type collection = {
   tokenid: any;
@@ -70,12 +70,12 @@ export const mintStore = defineStore("mint", () => {
               let json: string = await MintNftProvider.tokenURI(
                 tokenid.toNumber()
               );
-              json = json.replace("/static", "");
-              json = json.replace(".comc", ".com");
+              json = json.replace("https://aipet.hm-swap.com","https://ai.gmpets.xyz").replace("/static", "").replace(".comc", ".com")
               const resource = await axios.get(json);
+              console.log("img",resource.data.image.replace("https://aipet.hm-swap.com","https://ai.gmpets.xyz"))
               collection.value.push({
                 tokenid: tokenid.toNumber(),
-                image: resource.data.image,
+                image: resource.data.image.replace("https://aipet.hm-swap.com","https://ai.gmpets.xyz"),
                 name: resource.data.name,
                 description: resource.data.description,
                 attributes: resource.data.attributes as attributes[],

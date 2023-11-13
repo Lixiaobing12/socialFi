@@ -35,13 +35,13 @@ export default defineConfig({
     // 设置代理
     proxy: {
       "/api": {
-        // target: "http://172.20.10.2:8080/api/v1/",
-        target: "https://aipet.hm-swap.com/",
-        // rewrite: (path) => path.replace(/^\/api/, ""),
+        target: "http://149.28.31.240:8088/api/v1/",
+        // target: "https://aipet.hm-swap.com/",
+        rewrite: (path) => path.replace(/^\/api/, ""),
         changeOrigin: true,
       },
       "/static": {
-        target: "https://aipet.hm-swap.com/",
+        target: "http://149.28.31.240:8088/",
         // target: "http://172.20.10.2:8080/",
         changeOrigin: true,
       },

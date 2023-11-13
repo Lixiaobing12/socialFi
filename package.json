@@ -6,11 +6,16 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@vitejs/plugin-vue": "^2",
+    "autoprefixer": "^10",
+    "daisyui": "^3",
+    "postcss": "^8",
     "@antv/g2": "^5.1.0",
     "@ethersproject/bytes": "^5.5.0",
     "@iconfu/svg-inject": "^1.2.3",
     "@intlify/vite-plugin-vue-i18n": "^6.0.1",
     "@vicons/antd": "^0.12.0",
+    "@vicons/fa": "^0.12.0",
     "@vicons/fluent": "^0.12.0",
     "@vicons/ionicons4": "^0.12.0",
     "@vicons/ionicons5": "^0.12.0",
@@ -34,6 +39,7 @@
     "prettier": "^2.7.1",
     "rollup": "^2.77.3",
     "tailwindcss": "^3.3.3",
+    "typescript": "^5.0.2",
     "unplugin-auto-import": "^0.14.4",
     "vant": "^3.5.0",
     "vfonts": "0.0.3",
@@ -42,13 +48,11 @@
     "vue-clipboard3": "^2.0.0",
     "vue-router": "4",
     "vue-styled-components": "^1.6.0",
+    "vue-tsc": "^1.8.5",
     "vue3-styled-component": "^2.0.3",
-    "typescript": "^5.0.2",
-    "xlsx": "^0.18.5",
-    "vue-tsc": "^1.8.5"
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^1.2.2",
     "@vue/compiler-sfc": "^3.0.11",
     "less": "^4.1.1",
     "unplugin-vue-components": "^0.19.6",

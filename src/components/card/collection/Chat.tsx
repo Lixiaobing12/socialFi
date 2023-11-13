@@ -99,7 +99,6 @@ const Chat = () => {
         }
       };
       watch(show, () => {
-        console.log(target.value);
         if (show.value === false) {
           context.value = [];
         }

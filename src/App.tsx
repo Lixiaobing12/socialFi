@@ -18,7 +18,7 @@ const App = () => {
   return defineComponent({
     setup() {
       const pageLoading = ref(false);
-      const loader = ref(true);
+      const loader = ref(false);
       provide("pageLoader", (status: boolean) => {
         pageLoading.value = status;
       });

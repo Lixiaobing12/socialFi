@@ -128,13 +128,13 @@ const Home = () => {
       return () => (
         <Wrapper>
           <Flex>
-            <Bold>AI.SOCIAL-PET</Bold>
+            <Bold>GM.PETS</Bold>
             <CollectionText>Collect and furrever friends</CollectionText>
             <PositionBg />
             <img src="/assets/banner1.png" />
-            <FixedGif>
+            {/* <FixedGif>
               <img src="/assets/cure1.gif" width={100} alt="" />
-            </FixedGif>
+            </FixedGif> */}
           </Flex>
           <WrapperBodyBg>
             <CollectCard></CollectCard>
