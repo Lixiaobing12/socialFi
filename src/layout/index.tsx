@@ -1,10 +1,18 @@
-import { computed, defineComponent, onMounted, ref, watch } from "vue";
+import {
+  VNodeRef,
+  computed,
+  defineComponent,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+} from "vue";
 import styled from "vue3-styled-component";
 import { useWallet } from "../store/wallet";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { mintStore } from "@/store/mint.contract";
 import { NDrawer, NDrawerContent, NGi, NGrid, NIcon } from "naive-ui";
-import { CloseFilled } from "@vicons/material";
+import { CloseFilled,MenuOpenTwotone } from "@vicons/material";
 import { ChevronRight12Regular } from "@vicons/fluent";
 import { TelegramPlane, Twitter, Discord } from "@vicons/fa";
 
@@ -14,17 +22,24 @@ const Layout = () => {
     min-height: 100vh;
     flex-direction: column;
   `;
-  const WrapperBody = styled.div`
-    padding: 12px;
+  const WrapperBody = styled("div")`
+    padding: ${(props) => props.padding ?? "12px"};
+    padding-top: ${(props) => props.top ?? "60px"};
   `;
   const WraperHeader = styled("div")`
+    background: ${(props) => props.bg ?? "transparent"};
     display: flex;
     height: 60px;
     width: 100%;
     justify-content: space-between;
     align-items: center;
     padding: ${(props) => props.padding ?? "0 12px"};
-    position: relative;
+    position: fixed;
+    top: 0;
+    z-index: 999;
+    left:0;
+    right:0;
+
     h1 {
       font-size: 20px;
       font-weight: bold;
@@ -47,20 +62,6 @@ const Layout = () => {
   `;
   const SmallSpan = styled.span`
     font-size: 12px;
-  `;
-
-  const MoreItem = styled<any>("div")`
-    background: #fff;
-    width: 100%;
-    position: absolute;
-    top: 60px;
-    z-index: 1;
-    box-shadow: 0px 16px 11px -19px;
-    height: ${(props: any) => props.height + "px" || "0px"};
-    transition: height 200ms ease-in-out;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
   `;
   const ItemAnimate = styled.div`
     border-bottom: 1px solid rgb(226 226 226);
@@ -87,8 +88,12 @@ const Layout = () => {
       const wallet = useWallet();
       const useMintStore = mintStore();
       const isConnect = computed(() => wallet.wallet.isConnect);
+      // setHeader background
+      const headerBackground = ref<string | null>(null);
       // router
       const router = useRouter();
+      // route
+      const route = useRoute();
       // open drawer
       const isOpen = ref(false);
       const open = () => {
@@ -110,16 +115,32 @@ const Layout = () => {
         useMintStore.init();
       });
 
+      // 滚动事件
+      function doScroll(event: any) {
+        if (
+          event.target.scrollingElement.scrollTop > 0 &&
+          !headerBackground.value
+        )
+          headerBackground.value = "#fff";
+        else if (event.target.scrollingElement.scrollTop === 0)
+          headerBackground.value = null;
+      }
+
       onMounted(() => {
         const config = localStorage.getItem("connected");
+        document.addEventListener("scroll", doScroll);
         if (config) {
           wallet.connect();
         }
       });
 
+      onUnmounted(() => {
+        document.removeEventListener("scroll", doScroll);
+      });
+
       return () => (
         <Wrapper id="wrapper">
-          <WraperHeader>
+          <WraperHeader bg={headerBackground.value}>
             <RouterLink to="/">
               <img src="/assets/logo.png" width={50} alt="" />
             </RouterLink>
@@ -134,12 +155,9 @@ const Layout = () => {
                 }}
               />
               <img src="/assets/icon/book.svg" width={28} alt="" />
-              <img
-                src="/assets/icon/menu.png"
-                width={28}
-                alt=""
-                onClick={open}
-              />
+              <NIcon size={30} onClick={open} class="mr-[10px]">
+                <MenuOpenTwotone/>
+              </NIcon>
               <But onClick={connect}>
                 {wallet.wallet.isConnect ? (
                   <SmallSpan>
@@ -154,7 +172,7 @@ const Layout = () => {
             </FlexEnd>
           </WraperHeader>
 
-          <WrapperBody>
+          <WrapperBody top={/market/.exec(route.path) ? '0' : null}>
             <router-view />
           </WrapperBody>
 
@@ -192,7 +210,7 @@ const Layout = () => {
                 ),
               }}
             >
-              <WraperHeader padding="0">
+              <WraperHeader>
                 <RouterLink to="/">
                   <img src="/assets/logo.png" width={50} alt="" />
                 </RouterLink>
@@ -216,61 +234,62 @@ const Layout = () => {
                   </NIcon>
                 </FlexEnd>
               </WraperHeader>
-
-              <ItemAnimate
-                class="animate__animated animate__fadeInLeft"
-                onClick={navigate.bind(null, "/")}
-              >
-                <div>
-                  <img src="/assets/icon/home.png" alt="" width={25} />
-                  Home
-                </div>
-                <NIcon>
-                  <ChevronRight12Regular />
-                </NIcon>
-              </ItemAnimate>
-              <ItemAnimate
-                class="animate__animated animate__fadeInRight"
-                onClick={navigate.bind(null, "/collection")}
-              >
-                <div>
-                  <img src="/assets/icon/collection.png" alt="" width={25} />
-                  My Collections
-                </div>
-                <NIcon>
-                  <ChevronRight12Regular />
-                </NIcon>
-              </ItemAnimate>
-              <ItemAnimate
-                class="animate__animated animate__fadeInLeft"
-                onClick={navigate.bind(null, "/community")}
-              >
-                <div>
-                  <img src="/assets/icon/community.png" alt="" width={25} />
-                  Community
-                </div>
-                <NIcon>
-                  <ChevronRight12Regular />
-                </NIcon>
-              </ItemAnimate>
-              <ItemAnimate
-                class="animate__animated animate__fadeInRight"
-                onClick={navigate.bind(null, "/market")}
-              >
-                <div>
-                  <img src="/assets/icon/market.png" alt="" width={25} />
-                  Marketplace
-                </div>
-                <NIcon>
-                  <ChevronRight12Regular />
-                </NIcon>
-              </ItemAnimate>
-              <ItemAnimate class="animate__animated animate__fadeInLeft">
-                <div>
-                  <img src="/assets/icon/rank.png" alt="" width={25} />
-                  Rank
-                </div>
-              </ItemAnimate>
+              <WrapperBody padding="0" top="45px">
+                <ItemAnimate
+                  class="animate__animated animate__fadeInLeft"
+                  onClick={navigate.bind(null, "/")}
+                >
+                  <div>
+                    <img src="/assets/icon/home.png" alt="" width={25} />
+                    Home
+                  </div>
+                  <NIcon>
+                    <ChevronRight12Regular />
+                  </NIcon>
+                </ItemAnimate>
+                <ItemAnimate
+                  class="animate__animated animate__fadeInRight"
+                  onClick={navigate.bind(null, "/collection")}
+                >
+                  <div>
+                    <img src="/assets/icon/collection.png" alt="" width={25} />
+                    My Collections
+                  </div>
+                  <NIcon>
+                    <ChevronRight12Regular />
+                  </NIcon>
+                </ItemAnimate>
+                <ItemAnimate
+                  class="animate__animated animate__fadeInLeft"
+                  onClick={navigate.bind(null, "/community")}
+                >
+                  <div>
+                    <img src="/assets/icon/community.png" alt="" width={25} />
+                    Community
+                  </div>
+                  <NIcon>
+                    <ChevronRight12Regular />
+                  </NIcon>
+                </ItemAnimate>
+                <ItemAnimate
+                  class="animate__animated animate__fadeInRight"
+                  onClick={navigate.bind(null, "/market")}
+                >
+                  <div>
+                    <img src="/assets/icon/market.png" alt="" width={25} />
+                    Marketplace
+                  </div>
+                  <NIcon>
+                    <ChevronRight12Regular />
+                  </NIcon>
+                </ItemAnimate>
+                <ItemAnimate class="animate__animated animate__fadeInLeft">
+                  <div>
+                    <img src="/assets/icon/rank.png" alt="" width={25} />
+                    Rank
+                  </div>
+                </ItemAnimate>
+              </WrapperBody>
             </NDrawerContent>
           </NDrawer>
         </Wrapper>

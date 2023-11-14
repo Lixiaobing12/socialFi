@@ -158,7 +158,9 @@ const Home = () => {
           <Triangle />
           <Flex>
             <RoundFoodImg src="/assets/market.png" width={100} alt="" />
-            <H2SpanNotIndent>To Market</H2SpanNotIndent>
+            <H2SpanNotIndent>
+              <RouterLink to="/market">To Market</RouterLink>
+            </H2SpanNotIndent>
           </Flex>
           <BoxShadowH2Span>Foundation</BoxShadowH2Span>
           <Group>

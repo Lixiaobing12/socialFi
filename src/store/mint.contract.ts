@@ -6,7 +6,7 @@ import BigNumber from "bignumber.js";
 import { ref } from "vue";
 import axios from "axios";
 
-type attributes = {
+export type attributes = {
   value: string;
   trait_type: string;
 };
@@ -17,6 +17,7 @@ export type collection = {
   name: string;
   description: string;
 };
+
 export const mintStore = defineStore("mint", () => {
   let timer: NodeJS.Timeout | null;
   const collection = ref<collection[]>([]);
@@ -30,7 +31,7 @@ export const mintStore = defineStore("mint", () => {
       singer
     );
     const price = await MintNftProvider.cost();
-      console.log('price',price.toString())
+    console.log("price", price.toString());
     return MintNftProvider.mint(
       account,
       (import.meta as any).env.VITE_IMG_URI + uri,
@@ -42,52 +43,85 @@ export const mintStore = defineStore("mint", () => {
 
   const NextTokenId = async () => {
     const wallet = useWallet();
-    const [provider, singer, account] = await wallet.connect();
+    const [provider] = await wallet.connect();
     const MintNftProvider = new ethers.Contract(
-      (import.meta as any).env.VITE_MINE_SOL,
+      import.meta.env.VITE_MINE_SOL,
       MintNftAbi,
       provider
     );
     return (await MintNftProvider.getNextId()).toNumber() + 1;
   };
-  const init = async () => {
+
+  /** get User info */
+  const UserInfo = async (account: string) => {
     const wallet = useWallet();
-    const [provider, singer, account] = await wallet.connect();
+    const [provider] = await wallet.connect();
     const MintNftProvider = new ethers.Contract(
-      (import.meta as any).env.VITE_MINE_SOL,
+      import.meta.env.VITE_MINE_SOL,
       MintNftAbi,
       provider
     );
-    async function func() {
-      const tokenIds: any[] = await MintNftProvider.tokensOfOwner(account);
-      if (tokenIds.length) {
-        tokenIds.forEach(async (tokenid) => {
-          let index = collection.value.findIndex(
-            (item) => item.tokenid === tokenid.toNumber()
-          );
-          if (index === -1) {
+
+    const tokenIds: any[] = await MintNftProvider.tokensOfOwner(account);
+
+    const collections: collection[] = [];
+
+    const promisies: any[] = [];
+    if (tokenIds.length) {
+      tokenIds.forEach((tokenid) => {
+        promisies.push(
+          new Promise(async (resolve, reject) => {
             try {
               let json: string = await MintNftProvider.tokenURI(
                 tokenid.toNumber()
               );
-              json = json.replace("https://aipet.hm-swap.com","https://ai.gmpets.xyz").replace("/static", "").replace(".comc", ".com")
+              json = json
+                .replace(
+                  "https://aipet.hm-swap.com",
+                  import.meta.env.VITE_IMG_URI
+                )
+                .replace("/static", "")
+                .replace(".comc", ".com");
               const resource = await axios.get(json);
-              console.log("img",resource.data.image.replace("https://aipet.hm-swap.com","https://ai.gmpets.xyz"))
-              collection.value.push({
+              collections.push({
                 tokenid: tokenid.toNumber(),
-                image: resource.data.image.replace("https://aipet.hm-swap.com","https://ai.gmpets.xyz"),
+                image: resource.data.image.replace(
+                  "https://aipet.hm-swap.com",
+                  import.meta.env.VITE_IMG_URI
+                ),
                 name: resource.data.name,
                 description: resource.data.description,
                 attributes: resource.data.attributes as attributes[],
               });
-            } catch (err) {}
-          }
-        });
-      }
+              resolve("");
+            } catch (err) {
+              console.log("err: ", err);
+              reject();
+            }
+          })
+        );
+      });
+    }
+    await Promise.all(promisies);
+    return collections;
+  };
+  const init = async () => {
+    const wallet = useWallet();
+    const [provider, singer, account] = await wallet.connect();
+    async function func() {
+      const data = await UserInfo(account);
+      const ids = collection.value.map<number>(item=>{
+        return item.tokenid
+      })
+      data.forEach(item=>{
+        if(!ids.includes(item.tokenid)){
+          collection.value.push(item)
+        }
+      })
     }
     func();
     if (timer) clearInterval(timer);
     timer = setInterval(func, 10 * 1000);
   };
-  return { mint, NextTokenId, init, collection };
+  return { mint, NextTokenId, init, collection, UserInfo };
 });
